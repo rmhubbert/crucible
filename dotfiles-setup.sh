@@ -29,6 +29,14 @@ if [ $? -eq 0 ]; then
   stow zsh
   stow ghostty
   stow nvim
+  stow gtk-4.0
+  stow hypr
+  stow rofi
+  stow scripts
+  stow starship
+  stow tmux
+  stow whitesur
+  stow zsh
 else
   echo "Failed to clone the repository."
   exit 1

@@ -36,16 +36,25 @@ echo "Starting system setup..."
 echo "Updating system..."
 sudo pacman -Syu --noconfirm
 
+echo "Moving to your home directory"
+cd ~
+
+echo "Installing git and base-devel"
+sudo pacman -S --needed git base-devel --noconfirm
+
+echo "Downloading your dotfiles"
+git clone git@github.com:rmhubbert/dotfiles.git Dotfiles
+
+
 # Install yay AUR helper if not present
 if ! command -v yay &> /dev/null; then
   echo "Installing yay AUR helper..."
-  sudo pacman -S --needed git base-devel --noconfirm
-  git clone https://aur.archlinux.org/yay.git
-  cd yay
+  git clone https://aur.archlinux.org/yay-bin.git
+  cd yay-bin
   echo "building yay.... yaaaaayyyyy"
   makepkg -si --noconfirm
   cd ..
-  rm -rf yay
+  rm -rf yay-bin
 else
   echo "yay is already installed"
 fi
@@ -72,27 +81,30 @@ install_packages "${MEDIA[@]}"
 echo "Installing fonts..."
 install_packages "${FONTS[@]}"
 
+echo "Installing TPM"
+. install-tpm.sh
+
 # Enable services
-echo "Configuring services..."
-for service in "${SERVICES[@]}"; do
-  if ! systemctl is-enabled "$service" &> /dev/null; then
-    echo "Enabling $service..."
-    sudo systemctl enable "$service"
-  else
-    echo "$service is already enabled"
-  fi
-done
+# echo "Configuring services..."
+# for service in "${SERVICES[@]}"; do
+#   if ! systemctl is-enabled "$service" &> /dev/null; then
+#     echo "Enabling $service..."
+#     sudo systemctl enable "$service"
+#   else
+#     echo "$service is already enabled"
+#   fi
+# done
 
 # Install gnome specific things to make it like a tiling WM
-echo "Installing Gnome extensions..."
-. gnome/gnome-extensions.sh
-echo "Setting Gnome hotkeys..."
-. gnome/gnome-hotkeys.sh
-echo "Configuring Gnome..."
-. gnome/gnome-settings.sh
+# echo "Installing Gnome extensions..."
+# . gnome/gnome-extensions.sh
+# echo "Setting Gnome hotkeys..."
+# . gnome/gnome-hotkeys.sh
+# echo "Configuring Gnome..."
+# . gnome/gnome-settings.sh
 
 # Some programs just run better as flatpaks. Like discord/spotify
-echo "Installing flatpaks (like discord and spotify)"
-. install-flatpaks.sh
-
+# echo "Installing flatpaks (like discord and spotify)"
+# . install-flatpaks.sh
+#
 echo "Setup complete! You may want to reboot your system."
